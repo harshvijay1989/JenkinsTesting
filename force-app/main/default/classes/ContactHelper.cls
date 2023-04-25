@@ -3,6 +3,7 @@ public class ContactHelper {
         ContactHelper.updateAccountOnCreateUndelete(conList);
     } 
     public static void afterUpdate(List<Contact> conList,Map<Id,Contact> newMap, Map<id,Contact> oldMap){
+        system.debug('Hi');
         Map<Id,Account> accMap = new Map<Id,Account>();
         for (Contact conObj : conList){
             if (conObj.AccountId != null && conObj.Phone !=null){
