@@ -85,9 +85,12 @@ jobs:
               # were using a normal env variable, its value would not be available outside this step.
               run: |
                   echo $PR_BODY > ./pr_body.txt
-                  node ./parsePR.js              
-                  TESTS=$(cat testsToRun.txt)       
+                  TESTS=$(cat ./pr_body.txt | grep "Apex::" | awk -F"[" '{print $2}' | awk -F"]" '{print $1}')
+                  echo $TESTS
                   echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
+                  #    node ./parsePR.js              
+               #   TESTS=$(cat testsToRun.txt)       
+                  #echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
                   
             # Now Install Salesforce CLI
             - name: 'Install Salesforce CLI'
@@ -159,11 +162,12 @@ jobs:
               run: |
                   cd changed-sources
                   sfdx scanner:run --format sarif --target './**/*.cls' --category "Design,Best Practices,Performance" --outfile 'apexScanResults.sarif'  
+                  cat apexScanResults.sarif
                   cd ..
 
             # Now we upload the .sarif file as explained in the previous step
             - name: Upload SARIF file
-              uses: github/codeql-action/upload-sarif@v1
+              uses: github/codeql-action/upload-sarif@v2
               with:
                 sarif_file: changed-sources/apexScanResults.sarif
 
@@ -175,14 +179,14 @@ jobs:
               if: ${{ env.APEX_TESTS != 'all' }}
               run: |
                   echo ${{env.APEX_TESTS}}
-                  sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --json
+                  sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunSpecifiedTests --runtests ${{env.APEX_TESTS}} --verbose
 
             # If the env variable equals all, we run all tests
             - name: 'Check-only deploy delta changes - run all tests'
               if: ${{ env.APEX_TESTS == 'all' }}
               run: |
-                  #sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests  --json
-                  echo "running test classes"
+                  sfdx force:source:deploy -p "changed-sources/force-app" --checkonly --testlevel RunLocalTests --verbose
+                  #echo "running test classes"
 
             - name: 'Deploy destructive changes (if any)'
-              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings
+              run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings --verbose
