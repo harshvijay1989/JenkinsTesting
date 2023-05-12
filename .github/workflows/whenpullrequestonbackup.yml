@@ -1,0 +1,22 @@
+# Unique name for this workflow
+name: On Push to develop Branch
+
+# Definition when the workflow should run
+on:
+  push:
+    branches: [backup]
+    paths:
+        - 'manifest/**'
+jobs:
+    Deploy_to_Develop:
+        runs-on: ubuntu-latest
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        steps:
+            - name: 'Checkout source code'
+              uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
+            - name: 'Printing the paths'
+              run: |
+                  echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+                  ls
