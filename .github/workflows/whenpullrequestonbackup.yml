@@ -36,6 +36,7 @@ jobs:
               run: |
                   echo "$HOME/sfdx/bin" >> $GITHUB_PATH
                   ls
-            - name: 'Installing Cli'
+            - name: 'Retrieve Package from'
               run: |
                   sfdx force:source:retrieve -x manifest/package.xml
+                  ls force-app/main/default
