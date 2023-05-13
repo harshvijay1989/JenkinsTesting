@@ -41,4 +41,8 @@ jobs:
                   sfdx force:source:retrieve -x manifest/package.xml
                   ls force-app/main/default
             - name: 'Commiting Changes to Repo'
-              uses: stefanzweifel/git-auto-commit-action@v4
+              run: |
+                  git config --global user.name 'Github Action'
+                  git config --global user.Email 'harsh@crmlanding.in'
+                  git add .
+                  git commit -m "Github Action Automated Process"
