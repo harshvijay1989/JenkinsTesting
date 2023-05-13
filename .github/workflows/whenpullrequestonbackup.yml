@@ -40,5 +40,5 @@ jobs:
               run: |
                   sfdx force:source:retrieve -x manifest/package.xml
                   ls force-app/main/default
-                  git add .
-                  git commit -m "Backup Auto"
+            - name: 'Commiting Changes to Repo'
+              uses: stefanzweifel/git-auto-commit-action@v4
